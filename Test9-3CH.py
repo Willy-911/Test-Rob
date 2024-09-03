@@ -12,6 +12,8 @@ from io import BytesIO
 import re
 import sympy as sp
 
+# Global variable to store the user's name
+user_name = None
 
 def Talk(audio):
     """Function that speaks using Google Text-to-Speech"""
@@ -115,12 +117,33 @@ def calculate_expression(expression):
         Talk('لَقَدْ حَدَّثَ خَطَأً فِي الْحِسَاب.')
 
 
+def handle_greeting_and_name(order):
+    """Handle greeting and asking for the robot's name"""
+    global user_name
+    
+    # Greet the user
+    if "مرحبا" in order or "اهلا" in order:
+        if user_name:
+            Talk(f'مرحباً يا {user_name}!')
+        else:
+            Talk('مرحباً! كيف يمكنني مساعدتك؟')
+
+    # Respond to "What's your name?"
+    elif "اسمك ايه" in order or "ما اسمك" in order:
+        Talk('اسمي بيلا! كيف يمكنني مساعدتك؟')
+
+    # Capture and greet the user by their name
+    elif "اسمي" in order:
+        user_name = order.split("اسمي", 1)[1].strip()
+        Talk(f'أهلاً يا {user_name}! كيف يمكنني مساعدتك؟')
+
+
 # Initialize and start interaction
-play_sound("sounds/EsmakEh.mp3")
+# play_sound("sounds/EsmakEh.mp3")
 
-name = TakeOrder()
+# name = TakeOrder()
 
-play_sound("sounds/Asa3dakEzay.mp3")
+# play_sound("sounds/Asa3dakEzay.mp3")
 
 # Define word groups for specific responses
 Main_Words_1 = {
@@ -138,6 +161,9 @@ while True:
     if order is None:
         continue
     order = order.split()
+
+    # Handle greeting and name interactions
+    handle_greeting_and_name(' '.join(order))
 
     if "احسب" in order:  # Look for calculation command
         calculation = ' '.join(order[order.index("احسب") + 1:])  # Get the expression to calculate
